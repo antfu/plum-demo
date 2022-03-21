@@ -2,9 +2,6 @@
 const el = $ref<HTMLCanvasElement>()
 const ctx = $computed(() => el!.getContext('2d')!)
 
-const WIDTH = 2000
-const HEIGHT = 2000
-
 interface Point {
   x: number
   y: number
