@@ -2,8 +2,8 @@
 const el = $ref<HTMLCanvasElement>()
 const ctx = $computed(() => el!.getContext('2d')!)
 
-const WIDTH = 600
-const HEIGHT = 600
+const WIDTH = 2000
+const HEIGHT = 2000
 
 interface Point {
   x: number
@@ -17,40 +17,46 @@ interface Branch {
 }
 
 function init() {
-  ctx.strokeStyle = '#fff'
+  ctx.strokeStyle = '#fff5'
 
   step({
-    start: { x: WIDTH / 2, y: HEIGHT },
-    length: 20,
-    theta: -Math.PI / 2,
+    start: { x: 0, y: 0 },
+    length: 10,
+    theta: Math.PI / 4,
   })
 }
 
-const pendingTasks: Function[] = []
+let pendingTasks: Function[] = []
 
 function step(b: Branch, depth = 0) {
   const end = getEndPoint(b)
   drawBranch(b)
 
-  if (depth < 2 || Math.random() < 0.5) {
+  if (depth < 4 || Math.random() < 0.5) {
     pendingTasks.push(() => step({
       start: end,
-      length: b.length + (Math.random() * 10 - 5),
-      theta: b.theta - 0.3 * Math.random(),
+      length: b.length + (Math.random() * 2 - 1),
+      theta: b.theta - 0.2 * Math.random(),
     }, depth + 1))
   }
-  if (depth < 2 || Math.random() < 0.5) {
+  if (depth < 4 || Math.random() < 0.5) {
     pendingTasks.push(() => step({
       start: end,
-      length: b.length + (Math.random() * 10 - 5),
-      theta: b.theta + 0.3 * Math.random(),
+      length: b.length + (Math.random() * 2 - 1),
+      theta: b.theta + 0.2 * Math.random(),
     }, depth + 1))
   }
 }
 
 function frame() {
-  const tasks = [...pendingTasks]
-  pendingTasks.length = 0
+  const tasks: Function[] = []
+  pendingTasks = pendingTasks.filter((i) => {
+    if (Math.random() > 0.4) {
+      tasks.push(i)
+      return false
+    }
+    return true
+  })
   tasks.forEach(fn => fn())
 }
 
@@ -90,5 +96,5 @@ onMounted(() => {
 </script>
 
 <template>
-  <canvas ref="el" width="600" height="600" border />
+  <canvas ref="el" width="2000" height="2000" scale-50 origin-top-left />
 </template>>
